@@ -160,6 +160,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rcsThrust: 100
   mainThrust: 15
+  mainEngine: {fileID: 8300000, guid: f3610a9af027e4b189602af3b5a5a669, type: 3}
+  deathExplosion: {fileID: 8300000, guid: 9f430d4184ab84d5790b7d71220e8379, type: 3}
+  jingle: {fileID: 8300000, guid: 02781d6c61dee440a96c025103a9553a, type: 3}
 --- !u!82 &4417044297528090132
 AudioSource:
   m_ObjectHideFlags: 0
