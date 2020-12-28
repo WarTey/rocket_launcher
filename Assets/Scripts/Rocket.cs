@@ -23,6 +23,8 @@ public class Rocket : MonoBehaviour
     enum State{ Alive, Dying, Transcending };
     State state = State.Alive;
 
+    bool collisionsDisabled = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -38,11 +40,16 @@ public class Rocket : MonoBehaviour
             RespondToThrustInput();
             RespondToRotateInput();
         }
+
+        if (Debug.isDebugBuild)
+        {
+            RespondToDebugKeys();
+        }
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (state != State.Alive)
+        if (state != State.Alive || collisionsDisabled)
         {
             return;
         }
@@ -59,6 +66,18 @@ public class Rocket : MonoBehaviour
             default:
                 StartDeathSequence();
                 break;
+        }
+    }
+
+    private void RespondToDebugKeys()
+    {
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            LoadNextScene();
+        }
+        else if (Input.GetKeyDown(KeyCode.C))
+        {
+            collisionsDisabled = !collisionsDisabled;
         }
     }
 
@@ -84,12 +103,16 @@ public class Rocket : MonoBehaviour
 
     private void LoadPreviousLevel()
     {
-        SceneManager.LoadScene(0);
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        int previousSceneIndex = Mathf.Max(0, currentSceneIndex - 1);
+        SceneManager.LoadScene(previousSceneIndex);
     }
 
     private void LoadNextScene()
     {
-        SceneManager.LoadScene(1);
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        int nextSceneIndex = (currentSceneIndex + 1) % SceneManager.sceneCountInBuildSettings;
+        SceneManager.LoadScene(nextSceneIndex);
     }
 
     private void RespondToThrustInput()
@@ -120,7 +143,7 @@ public class Rocket : MonoBehaviour
 
     private void RespondToRotateInput()
     {
-        rigidBody.freezeRotation = true;
+        rigidBody.angularVelocity = Vector3.zero;
 
         float rotationThisFrame = rcsThrust * Time.deltaTime;
 
@@ -132,7 +155,5 @@ public class Rocket : MonoBehaviour
         {
             transform.Rotate(-Vector3.forward * rotationThisFrame);
         }
-
-        rigidBody.freezeRotation = false;
     }
 }
